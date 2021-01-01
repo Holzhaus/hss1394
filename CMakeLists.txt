@@ -8,14 +8,17 @@ set(CMAKE_PROJECT_DESCRIPTION "High-speed MIDI-over-Firewire device access libra
 #
 
 add_library(hss1394
-  code/src/1394API.cpp
-  code/src/ConfigRom.cpp
-  code/src/HSS1394.cpp
+  src/1394API.cpp
+  src/ConfigRom.cpp
+  src/HSS1394.cpp
 )
-target_include_directories(hss1394 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/code/src")
+target_include_directories(hss1394 PRIVATE
+  "${CMAKE_CURRENT_SOURCE_DIR}/include"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src"
+)
 
 if(APPLE)
-  target_sources(hss1394 PRIVATE code/src/osx/1394API_OSX.cpp)
+  target_sources(hss1394 PRIVATE src/osx/1394API_OSX.cpp)
 
   find_library(IOKit_LIBRARY IOKit REQUIRED)
   target_link_libraries(hss1394 PUBLIC ${IOKit_LIBRARY})
@@ -30,23 +33,23 @@ if(APPLE)
     target_compile_definitions(hss1394 PRIVATE "OSX10_4")
   endif()
 elseif(WIN32)
-  target_sources(hss1394 PRIVATE code/src/win32/1394API_VHPD1394.cpp)
+  target_sources(hss1394 PRIVATE src/win32/1394API_VHPD1394.cpp)
   target_compile_definitions(hss1394 PRIVATE "_WIN32_")
 
   # Add header-only library dependency ST1394_ASIO
-  target_include_directories(hss1394 SYSTEM PRIVATE code/src/win32/Thesycon/ST1394_ASIO)
+  target_include_directories(hss1394 SYSTEM PRIVATE src/win32/Thesycon/ST1394_ASIO)
 
   # Add library dependency VHPD1304
   add_library(vhpd1394 OBJECT
-    code/src/win32/Thesycon/VHPD1394/CVhpdAsyncSlave.cpp
-    code/src/win32/Thesycon/VHPD1394/CVhpdBuf.cpp
-    code/src/win32/Thesycon/VHPD1394/CVhpd.cpp
-    code/src/win32/Thesycon/VHPD1394/CVhpdDataSlave.cpp
-    code/src/win32/Thesycon/VHPD1394/CVhpdNotifySlave.cpp
-    code/src/win32/Thesycon/VHPD1394/CVhpdThread.cpp
-    code/src/win32/Thesycon/VHPD1394/SetupApiDll.cpp
+    src/win32/Thesycon/VHPD1394/CVhpdAsyncSlave.cpp
+    src/win32/Thesycon/VHPD1394/CVhpdBuf.cpp
+    src/win32/Thesycon/VHPD1394/CVhpd.cpp
+    src/win32/Thesycon/VHPD1394/CVhpdDataSlave.cpp
+    src/win32/Thesycon/VHPD1394/CVhpdNotifySlave.cpp
+    src/win32/Thesycon/VHPD1394/CVhpdThread.cpp
+    src/win32/Thesycon/VHPD1394/SetupApiDll.cpp
   )
-  target_include_directories(vhpd1394 SYSTEM PUBLIC code/src/win32/Thesycon/VHPD1394)
+  target_include_directories(vhpd1394 SYSTEM PUBLIC src/win32/Thesycon/VHPD1394)
   target_link_libraries(hss1394 PRIVATE vhpd1394)
 else()
     message(FATAL_ERROR "Operating system not supported")
@@ -67,7 +70,7 @@ install(TARGETS hss1394
 
 install(
   FILES
-    "${CMAKE_CURRENT_SOURCE_DIR}/code/src/HSS1394.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/code/src/HSS1394Types.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/HSS1394.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/HSS1394Types.h"
   DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/hss1394"
 )

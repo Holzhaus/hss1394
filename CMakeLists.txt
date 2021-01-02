@@ -34,7 +34,7 @@ if(APPLE)
   endif()
 elseif(WIN32)
   target_sources(hss1394 PRIVATE src/win32/1394API_VHPD1394.cpp)
-  target_compile_definitions(hss1394 PRIVATE "_WIN32_")
+  target_compile_definitions(hss1394 PRIVATE "_WIN32_" "HSS1394_EXPORT_DLL")
 
   # Add header-only library dependency ST1394_ASIO
   target_include_directories(hss1394 SYSTEM PRIVATE lib/ST1394_ASIO)
